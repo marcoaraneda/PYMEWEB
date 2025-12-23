@@ -2,6 +2,7 @@ from rest_framework import generics
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
 from rest_framework.permissions import AllowAny
+from django.shortcuts import render, get_object_or_404
 
 
 
@@ -25,3 +26,10 @@ class ProductListAPIView(generics.ListAPIView):
             store__slug=store_slug,
             is_active=True
         ).select_related("category").prefetch_related("variants")
+
+
+    def product_detail(request, slug):
+        product = get_object_or_404(Product, slug=slug)
+        return render(request, "catalogo/product_detail.html", {
+        "product": product
+        })

@@ -20,6 +20,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from apps.stores.views import StoreDetailView
+from django.conf.urls.static import static
+from django.conf import settings
 
 
 urlpatterns = [
@@ -46,3 +48,8 @@ urlpatterns = [
 ]
 
 
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

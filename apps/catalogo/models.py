@@ -67,3 +67,21 @@ class ProductVariant(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.name}"
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="images"
+    )
+    image = models.ImageField(upload_to="products/")
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"Imagen {self.id} - {self.product.name}"
+    
