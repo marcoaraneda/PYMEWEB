@@ -1,11 +1,10 @@
 from rest_framework import serializers
-from apps.orders.models import Order, OrderItem
+from .models import Order, OrderItem
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ['variant', 'quantity', 'price']
-
+        fields = ['product', 'quantity', 'price']
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -21,8 +20,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'phone',
             'address',
             'total',
-            'items',
-            'created_at'
+            'items'
         ]
 
     def create(self, validated_data):
@@ -32,7 +30,9 @@ class OrderSerializer(serializers.ModelSerializer):
         for item in items_data:
             OrderItem.objects.create(
                 order=order,
-                **item
+                product=item['product'],
+                quantity=item['quantity'],
+                price=item['price']
             )
 
         return order
