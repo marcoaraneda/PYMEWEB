@@ -24,6 +24,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/stores/", include("apps.stores.urls")),
@@ -45,6 +46,7 @@ urlpatterns = [
     path("api/store/<slug:store_slug>/catalogo/", include("apps.catalogo.urls_public")),
     path("api/store/<slug:store_slug>/cms/", include("apps.cms.urls_public")),
     path('<slug:slug>/', StoreDetailView.as_view(), name='store-detail'),
+    path('api/', include('apps.orders.urls')),
 ]
 
 
