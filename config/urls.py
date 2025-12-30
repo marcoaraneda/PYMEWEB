@@ -46,7 +46,10 @@ urlpatterns = [
     path("api/store/<slug:store_slug>/catalogo/", include("apps.catalogo.urls_public")),
     path("api/store/<slug:store_slug>/cms/", include("apps.cms.urls_public")),
     path('<slug:slug>/', StoreDetailView.as_view(), name='store-detail'),
+    path('api/orders/', include('apps.orders.urls')),
+    path('admin/', admin.site.urls),
     path('api/', include('apps.orders.urls')),
+
 ]
 
 
