@@ -1,5 +1,6 @@
 from django.db import models
 from apps.stores.models import Store
+from cloudinary.models import CloudinaryField
 
 
 class Category(models.Model):
@@ -75,7 +76,7 @@ class ProductImage(models.Model):
         on_delete=models.CASCADE,
         related_name="images"
     )
-    image = models.ImageField(upload_to="products/")
+    image = CloudinaryField("image", folder="products")
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 

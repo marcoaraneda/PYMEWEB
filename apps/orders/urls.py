@@ -8,8 +8,6 @@ urlpatterns = [
     path('orders/<int:pk>/', OrderDetailView.as_view(), name='order-detail'),
 ]
 
-
-
 router = DefaultRouter()
 router.register(r'orders', OrderViewSet, basename='orders')
 

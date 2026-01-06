@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import os
-
+import cloudinary
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     "apps.usuarios",
     "corsheaders",
     'apps.orders',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -160,5 +162,20 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 # Configuración de archivos subidos por usuarios
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dvjttkbbl',
+    'API_KEY': '796838697946831',
+    'API_SECRET': '9tTg3Ey2btNO6jWbDqIupHu-AvM',
+}
+
+cloudinary.config(
+    cloud_name="dvjttkbbl",
+    api_key="796838697946831",
+    api_secret="9tTg3Ey2btNO6jWbDqIupHu-AvM",
+    secure=True
+)

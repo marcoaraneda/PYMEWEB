@@ -14,9 +14,18 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "sku", "is_active"]
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField()
+
+    class Meta:
+        model = ProductImage
+        fields = ["id", "image", "order"]
+
+
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
-    variants = ProductVariantSerializer(many=True)
+    category = CategorySerializer(read_only=True)
+    variants = ProductVariantSerializer(many=True, read_only=True)
+    images = ProductImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
@@ -31,9 +40,3 @@ class ProductSerializer(serializers.ModelSerializer):
             "variants",
             "images",
         ]
-
-
-class ProductImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductImage
-        fields = ["id", "image", "order"]
