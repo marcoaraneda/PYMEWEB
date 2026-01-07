@@ -26,31 +26,40 @@ from django.conf import settings
 
 
 urlpatterns = [
+    # ================= ADMIN =================
     path("admin/", admin.site.urls),
+
+    # ================= API =================
     path("api/stores/", include("apps.stores.urls")),
+    path("api/orders/", include("apps.orders.urls")),
+
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
 
-    path("api/store/<slug:store_slug>/catalogo/", include("apps.catalogo.urls")),
-    path("api/store/<slug:store_slug>/cms/", include("apps.cms.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+
+    # ============ API POR TIENDA ============
+    path("api/store/<slug:store_slug>/catalogo/", include("apps.catalogo.urls")),
+    path("api/store/<slug:store_slug>/catalogo/", include("apps.catalogo.urls_public")),
+    path("api/store/<slug:store_slug>/cms/", include("apps.cms.urls")),
+    path("api/store/<slug:store_slug>/cms/", include("apps.cms.urls_public")),
+
     path("api/store/<slug:store_slug>/admin/catalogo/", include("apps.catalogo.urls_admin")),
     path("api/store/<slug:store_slug>/admin/inventario/", include("apps.inventario.urls_admin")),
     path("api/store/<slug:store_slug>/admin/cms/", include("apps.cms.urls_admin")),
+
     path("api/store/<slug:store_slug>/resenas/", include("apps.resenas.urls")),
     path("api/store/<slug:store_slug>/admin/resenas/", include("apps.resenas.urls_admin")),
+
     path("api/store/<slug:store_slug>/faq/", include("apps.faq.urls")),
     path("api/store/<slug:store_slug>/faq/", include("apps.faq.urls_product_questions")),
     path("api/store/<slug:store_slug>/admin/faq/", include("apps.faq.urls_admin")),
-    path("api/store/<slug:store_slug>/catalogo/", include("apps.catalogo.urls_public")),
-    path("api/store/<slug:store_slug>/cms/", include("apps.cms.urls_public")),
-    path('<slug:slug>/', StoreDetailView.as_view(), name='store-detail'),
-    path('api/orders/', include('apps.orders.urls')),
-    path('admin/', admin.site.urls),
-    path('api/', include('apps.orders.urls')),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # ================= FRONT (SIEMPRE AL FINAL) =================
+    path("<slug:slug>/", StoreDetailView.as_view(), name="store-detail"),
+
+    ]+ static(settings.MEDIA_URL,               document_root=settings.MEDIA_ROOT)
 
 
 if settings.DEBUG:

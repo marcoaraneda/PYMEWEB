@@ -1,6 +1,7 @@
 from django.urls import path
-from apps.stores.views import StoreDetailView
+from .views import StoreListView, StoreDetailView
 
 urlpatterns = [
-    path('<slug:slug>/', StoreDetailView.as_view(), name='store-detail'),
+    path("", StoreListView.as_view(), name="store-list"),          # 👈 /api/stores/
+    path("<slug:slug>/", StoreDetailView.as_view(), name="store-detail"),
 ]
