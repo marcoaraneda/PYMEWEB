@@ -74,7 +74,6 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             'phone',
             'address',
             'total',
-            'status',
             'created_at',
             'items'
         ]
