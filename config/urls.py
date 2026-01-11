@@ -55,6 +55,7 @@ urlpatterns = [
     path("api/store/<slug:store_slug>/faq/", include("apps.faq.urls")),
     path("api/store/<slug:store_slug>/faq/", include("apps.faq.urls_product_questions")),
     path("api/store/<slug:store_slug>/admin/faq/", include("apps.faq.urls_admin")),
+    path('api/orders/', include('apps.orders.urls')),
 
     # ================= FRONT (SIEMPRE AL FINAL) =================
     path("<slug:slug>/", StoreDetailView.as_view(), name="store-detail"),

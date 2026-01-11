@@ -1,10 +1,14 @@
 from rest_framework import serializers
 from .models import Order, OrderItem
+from apps.catalogo.models import Product
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all()
+    )
     product_name = serializers.CharField(
-        source='product.name',
+        source="product.name",
         read_only=True
     )
 
@@ -19,7 +23,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
         ]
 
 
-# 🔹 Serializer para CREAR pedido
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
 
@@ -33,25 +36,32 @@ class OrderSerializer(serializers.ModelSerializer):
             'phone',
             'address',
             'total',
-            'items'
+            'items',
         ]
 
+    def validate(self, data):
+        store = data.get('store')
+        items = data.get('items', [])
+
+        for item in items:
+            product = item['product']
+            if product.store != store:
+                raise serializers.ValidationError(
+                    f"El producto {product.id} no pertenece a esta tienda"
+                )
+
+        return data
+
     def create(self, validated_data):
-        items_data = validated_data.pop('items')
+        items_data = validated_data.pop("items")
         order = Order.objects.create(**validated_data)
 
         for item in items_data:
-            OrderItem.objects.create(
-                order=order,
-                product=item['product'],
-                quantity=item['quantity'],
-                price=item['price']
-            )
+            OrderItem.objects.create(order=order, **item)
 
         return order
 
 
-# 🔹 Serializer para VER pedido (detalle)
 class OrderDetailSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
 
