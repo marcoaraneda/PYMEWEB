@@ -22,7 +22,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
             'price'
         ]
 
-
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
 
@@ -61,7 +60,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return order
 
-
 class OrderDetailSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
 
@@ -69,6 +67,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'id',
+            'status',
             'name',
             'email',
             'phone',
