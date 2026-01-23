@@ -15,6 +15,9 @@ import os
 from dotenv import load_dotenv
 import os
 import cloudinary
+from transbank.common.options import IntegrationType
+from transbank.common.options import WebpayOptions
+from transbank.webpay.webpay_plus.transaction import Transaction
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -57,6 +60,7 @@ INSTALLED_APPS = [
     'apps.orders',
     'cloudinary',
     'cloudinary_storage',
+    'apps.payments.apps.PaymentsConfig',
 ]
 
 MIDDLEWARE = [
@@ -179,3 +183,10 @@ cloudinary.config(
     api_secret="9tTg3Ey2btNO6jWbDqIupHu-AvM",
     secure=True
 )
+
+# WEBPAY (SANDBOX)
+# settings.py
+
+WEBPAY_COMMERCE_CODE = "597055555532"
+WEBPAY_API_KEY = "579B1A0F0F3F8C2D1B0F3F8C2D1B0F3F"
+WEBPAY_ENVIRONMENT = "INTEGRATION"

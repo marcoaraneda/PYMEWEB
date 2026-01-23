@@ -2,6 +2,9 @@ from django.contrib import admin
 from .models import Category, Product, ProductVariant, ProductImage
 
 
+# =========================
+# CATEGORY
+# =========================
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "store", "is_active", "order", "created_at")
@@ -10,20 +13,38 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
 
 
+# =========================
+# PRODUCT IMAGE INLINE
+# =========================
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1
+    min_num = 1
 
 
+# =========================
+# PRODUCT
+# =========================
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "store", "category", "price", "is_active", "is_featured")
+    list_display = (
+        "id",
+        "name",
+        "store",
+        "category",
+        "price",
+        "is_active",
+        "is_featured",
+    )
     list_filter = ("store", "category", "is_active", "is_featured")
     search_fields = ("name", "slug")
     prepopulated_fields = {"slug": ("name",)}
     inlines = [ProductImageInline]
 
 
+# =========================
+# PRODUCT VARIANT
+# =========================
 @admin.register(ProductVariant)
 class ProductVariantAdmin(admin.ModelAdmin):
     list_display = ("id", "product", "name", "sku", "is_active", "created_at")
