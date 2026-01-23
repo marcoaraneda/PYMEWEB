@@ -1,13 +1,21 @@
+from django.utils.crypto import get_random_string
 from django.db import models
 from apps.stores.models import Store
 from apps.catalogo.models import Product
+
+
+def generate_tracking_code():
+    return get_random_string(10).upper()
 
 
 class Order(models.Model):
 
     STATUS_CHOICES = [
         ('pending', 'Pendiente'),
-        ('paid', 'Pagado'),
+        ('preparing', 'Preparando'),
+        ('in_transit', 'En tránsito'),
+        ('delivered', 'Llegó a destino'),
+        ('completed', 'Finalizado'),
         ('cancelled', 'Cancelado'),
     ]
 
@@ -27,6 +35,12 @@ class Order(models.Model):
         max_length=20,
         choices=STATUS_CHOICES,
         default='pending'
+    )
+
+    tracking_code = models.CharField(
+        max_length=20,
+        unique=True,
+        default=generate_tracking_code
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

@@ -10,8 +10,10 @@ class Store(models.Model):
 
     # Branding básico
     logo_url = models.URLField(blank=True)
+    description = models.TextField(blank=True)
 
     # Opcional (útil después)
+    contact_email = models.EmailField(blank=True)
     phone = models.CharField(max_length=30, blank=True)
     whatsapp = models.CharField(max_length=30, blank=True)
     address = models.CharField(max_length=200, blank=True)

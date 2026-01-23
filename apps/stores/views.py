@@ -34,10 +34,16 @@ class StoreListCreateView(generics.ListCreateAPIView):
 
 
 class StoreDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Store.objects.filter(is_active=True)
     lookup_field = 'slug'
     serializer_class = StoreSerializer
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        # Lecturas públicas solo en tiendas activas; para actualizar/eliminar
+        # permitimos incluir inactivas para que un admin pueda reactivar o borrar.
+        if self.request.method in permissions.SAFE_METHODS:
+            return Store.objects.filter(is_active=True)
+        return Store.objects.all()
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -45,11 +51,14 @@ class StoreDetailView(generics.RetrieveUpdateDestroyAPIView):
         return [IsAuthenticated()]
 
     def _ensure_admin(self, user, slug):
+        allowed_roles = [Role.ADMIN]
+        if getattr(user, "is_staff", False):
+            return True
         try:
             membership = StoreMembership.objects.get(user=user, store__slug=slug, is_active=True)
-            if not membership.roles.filter(code=Role.ADMIN).exists():
-                return False
-            return True
+            if membership.roles.filter(code__in=allowed_roles).exists():
+                return True
+            return False
         except StoreMembership.DoesNotExist:
             return False
 
@@ -75,4 +84,8 @@ class MyStoresView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Store.objects.filter(memberships__user=self.request.user, memberships__is_active=True).distinct()
+        return Store.objects.filter(
+            memberships__user=self.request.user,
+            memberships__is_active=True,
+            is_active=True,
+        ).distinct()

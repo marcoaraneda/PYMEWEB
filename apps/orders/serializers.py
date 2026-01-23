@@ -34,9 +34,13 @@ class OrderSerializer(serializers.ModelSerializer):
             'email',
             'phone',
             'address',
+            'status',
+            'tracking_code',
             'total',
+            'created_at',
             'items',
         ]
+        read_only_fields = ['tracking_code', 'created_at']
 
     def validate(self, data):
         store = data.get('store')
@@ -68,6 +72,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'status',
+            'tracking_code',
             'name',
             'email',
             'phone',

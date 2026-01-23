@@ -7,8 +7,20 @@ from .models import Store
 class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
-        fields = ["id", "name", "slug", "is_active", "logo_url"]
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "description",
+            "contact_email",
+            "phone",
+            "whatsapp",
+            "address",
+            "is_active",
+            "logo_url",
+        ]
         read_only_fields = ["is_active"]
+        extra_kwargs = {"slug": {"required": False}}
 
     def create(self, validated_data):
         base_slug = validated_data.get("slug") or slugify(validated_data.get("name", ""))
