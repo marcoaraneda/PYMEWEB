@@ -31,7 +31,11 @@ class ProductPublicListAPIView(generics.ListAPIView):
         if featured in ("1", "true", "True"):
             qs = qs.filter(is_featured=True)
 
-        return qs.select_related("category").prefetch_related("variants").order_by("-id")
+        marketplace = self.request.query_params.get("marketplace")
+        if marketplace in ("1", "true", "True"):
+            qs = qs.filter(is_marketplace=True)
+
+        return qs.select_related("category", "store").prefetch_related("variants", "images").order_by("-id")
 
 
 class ProductPublicDetailAPIView(generics.RetrieveAPIView):
@@ -41,4 +45,28 @@ class ProductPublicDetailAPIView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         store_slug = self.kwargs["store_slug"]
-        return Product.objects.filter(store__slug=store_slug, is_active=True).select_related("category").prefetch_related("variants")
+        return (
+            Product.objects.filter(store__slug=store_slug, is_active=True)
+            .select_related("category", "store")
+            .prefetch_related("variants", "images")
+        )
+
+
+class MarketplaceProductListAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        limit = self.request.query_params.get("limit")
+        qs = (
+            Product.objects.filter(is_active=True, is_marketplace=True)
+            .select_related("category", "store")
+            .prefetch_related("variants", "images")
+            .order_by("-created_at")
+        )
+        if limit:
+            try:
+                qs = qs[: int(limit)]
+            except ValueError:
+                pass
+        return qs

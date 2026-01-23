@@ -8,6 +8,9 @@ class Store(models.Model):
     slug = models.SlugField(max_length=80, unique=True)
     is_active = models.BooleanField(default=True)
 
+    # Branding básico
+    logo_url = models.URLField(blank=True)
+
     # Opcional (útil después)
     phone = models.CharField(max_length=30, blank=True)
     whatsapp = models.CharField(max_length=30, blank=True)

@@ -37,9 +37,12 @@ class Product(models.Model):
 
     # Precio simple por ahora (luego lo pasamos a variantes)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    offer_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
+    product_of_week = models.BooleanField(default=False)
+    is_marketplace = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

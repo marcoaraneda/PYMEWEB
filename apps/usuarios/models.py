@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from apps.stores.models import Store
+from cloudinary.models import CloudinaryField
 
 
 class Role(models.Model):
@@ -46,3 +47,11 @@ class StoreMembership(models.Model):
 
     def has_role(self, role_code: str) -> bool:
         return self.roles.filter(code=role_code).exists()
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
+    avatar = CloudinaryField("avatar", folder="avatars", blank=True, null=True)
+
+    def __str__(self):
+        return f"Perfil de {self.user}"

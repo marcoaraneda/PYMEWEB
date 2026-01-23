@@ -1,5 +1,12 @@
 from rest_framework import serializers
+from apps.stores.models import Store
 from .models import Category, Product, ProductVariant, ProductImage
+
+
+class StoreLiteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = ["id", "name", "slug"]
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -26,6 +33,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     images = ProductImageSerializer(many=True, read_only=True)
+    store = StoreLiteSerializer(read_only=True)
 
     class Meta:
         model = Product
@@ -35,7 +43,11 @@ class ProductSerializer(serializers.ModelSerializer):
             "slug",
             "description",
             "price",
+            "offer_price",
             "is_featured",
+            "product_of_week",
+            "is_marketplace",
+            "store",
             "category",
             "variants",
             "images",

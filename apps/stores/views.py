@@ -1,5 +1,6 @@
-from rest_framework import generics
+from rest_framework import generics, permissions, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 
 from apps.stores.models import Store
 from apps.stores.serializers import StoreSerializer
@@ -32,12 +33,41 @@ class StoreListCreateView(generics.ListCreateAPIView):
         return store
 
 
-# ✅ DETALLE DE TIENDA (por slug)
-class StoreDetailView(generics.RetrieveAPIView):
+class StoreDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Store.objects.filter(is_active=True)
     lookup_field = 'slug'
     serializer_class = StoreSerializer
     permission_classes = [AllowAny]
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def _ensure_admin(self, user, slug):
+        try:
+            membership = StoreMembership.objects.get(user=user, store__slug=slug, is_active=True)
+            if not membership.roles.filter(code=Role.ADMIN).exists():
+                return False
+            return True
+        except StoreMembership.DoesNotExist:
+            return False
+
+    def update(self, request, *args, **kwargs):
+        # Solo admins de la tienda pueden actualizar branding
+        if request.method not in permissions.SAFE_METHODS:
+            if not self._ensure_admin(request.user, kwargs.get("slug")):
+                return Response({"detail": "No tienes permisos"}, status=status.HTTP_403_FORBIDDEN)
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        if not self._ensure_admin(request.user, kwargs.get("slug")):
+            return Response({"detail": "No tienes permisos"}, status=status.HTTP_403_FORBIDDEN)
+
+        instance = self.get_object()
+        instance.is_active = False
+        instance.save(update_fields=["is_active"])
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class MyStoresView(generics.ListAPIView):

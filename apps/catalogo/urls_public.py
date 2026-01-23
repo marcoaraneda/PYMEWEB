@@ -7,5 +7,6 @@ urlpatterns = [
     path("products/", ProductPublicListAPIView.as_view(), name="products-public"),
     path("products/<slug:slug>/", ProductPublicDetailAPIView.as_view(), name="product-public-detail"),
     path('productos/', ProductListAPIView.as_view(), name='public-product-list'),
+    path('marketplace/products/', ProductPublicListAPIView.as_view(), name='marketplace-products'),
 ]
 

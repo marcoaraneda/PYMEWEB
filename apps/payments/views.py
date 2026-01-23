@@ -1,7 +1,8 @@
 import uuid
 
 from django.conf import settings
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from transbank.webpay.webpay_plus.transaction import Transaction
@@ -10,6 +11,7 @@ from transbank.common.integration_type import IntegrationType
 
 
 @api_view(["POST"])
+@permission_classes([AllowAny])
 def init_webpay(request):
     amount = request.data.get("amount")
 
@@ -44,6 +46,7 @@ def init_webpay(request):
 
 
 @api_view(["GET", "POST"])
+@permission_classes([AllowAny])
 def webpay_return(request):
     """Recibe el retorno de Webpay y devuelve el token recibido.
     Ajusta la lógica de confirmación según el flujo real de captura/commit."""

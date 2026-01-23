@@ -9,7 +9,7 @@ class Payment(models.Model):
         related_name='payment'
     )
 
-    token = models.CharField(max_length=255)
+    token = models.CharField(max_length=255, blank=True)
     buy_order = models.CharField(max_length=50)
     session_id = models.CharField(max_length=50)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
