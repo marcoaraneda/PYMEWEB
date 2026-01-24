@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "apps.faq",
     "apps.reportes",
     "apps.usuarios",
+    "apps.support",
     "corsheaders",
     'apps.orders',
     'cloudinary',

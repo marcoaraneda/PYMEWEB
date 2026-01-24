@@ -11,6 +11,7 @@ class Store(models.Model):
     # Branding básico
     logo_url = models.URLField(blank=True)
     description = models.TextField(blank=True)
+    about = models.TextField(blank=True)
 
     # Opcional (útil después)
     contact_email = models.EmailField(blank=True)

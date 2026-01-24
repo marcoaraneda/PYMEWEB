@@ -12,6 +12,7 @@ class StoreSerializer(serializers.ModelSerializer):
             "name",
             "slug",
             "description",
+            "about",
             "contact_email",
             "phone",
             "whatsapp",
