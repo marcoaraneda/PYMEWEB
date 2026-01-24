@@ -51,21 +51,31 @@ class DashboardSummaryView(APIView):
 
     def get(self, request):
         store_param = request.query_params.get("store")
-        store_filter = {}
-        if store_param:
-            store_filter["slug"] = store_param
+        user = request.user
 
-        stores_qs = Store.objects.filter(**store_filter) if store_filter else Store.objects.all()
+        # Limita las tiendas a las que el usuario pertenece (o staff ve todas)
+        if user.is_staff:
+            base_stores = Store.objects.all()
+        else:
+            membership_ids = StoreMembership.objects.filter(user=user, is_active=True).values_list("store_id", flat=True)
+            base_stores = Store.objects.filter(id__in=membership_ids)
+
+        # Aplica filtro por slug si se envía y coincide con las tiendas accesibles
+        if store_param:
+            stores_qs = base_stores.filter(slug=store_param)
+        else:
+            stores_qs = base_stores
+
         active_stores = stores_qs.filter(is_active=True).count()
 
-        orders_qs = Order.objects.filter(store__in=stores_qs) if store_filter else Order.objects.all()
+        orders_qs = Order.objects.filter(store__in=stores_qs)
         now = timezone.now()
         visits_last_7d = orders_qs.filter(created_at__gte=now - timedelta(days=7)).count()
         conversions = orders_qs.filter(status__in=["completed", "delivered"]).count()
         pending_orders = orders_qs.filter(status__in=["pending", "preparing", "in_transit"]).count()
         new_orders_24h = orders_qs.filter(created_at__gte=now - timedelta(hours=24)).count()
 
-        tickets_qs = Ticket.objects.filter(store__in=stores_qs) if store_filter else Ticket.objects.all()
+        tickets_qs = Ticket.objects.filter(store__in=stores_qs)
         support_open = tickets_qs.filter(status__in=[Ticket.STATUS_OPEN, Ticket.STATUS_IN_PROGRESS]).count()
         tickets_updated_24h = tickets_qs.filter(updated_at__gte=now - timedelta(hours=24)).count()
         latest_tickets = list(

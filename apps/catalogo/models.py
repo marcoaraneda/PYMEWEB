@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from apps.stores.models import Store
 from cloudinary.models import CloudinaryField
@@ -21,6 +22,13 @@ class Category(models.Model):
 
 class Product(models.Model):
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name="products")
+    submitted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="submitted_products",
+    )
 
     category = models.ForeignKey(
         Category,

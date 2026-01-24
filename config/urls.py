@@ -19,7 +19,6 @@ from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from apps.stores.views import StoreDetailView
-from apps.catalogo.views_public import MarketplaceProductListAPIView
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -41,7 +40,7 @@ urlpatterns = [
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
-    path("api/marketplace/products/", MarketplaceProductListAPIView.as_view(), name="marketplace-products"),
+    path("api/marketplace/", include("apps.catalogo.urls_marketplace")),
 
     # ============ API POR TIENDA ============
     path("api/store/<slug:store_slug>/catalogo/", include("apps.catalogo.urls")),

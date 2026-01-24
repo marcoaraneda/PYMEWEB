@@ -7,6 +7,7 @@ class Store(models.Model):
     name = models.CharField(max_length=120)
     slug = models.SlugField(max_length=80, unique=True)
     is_active = models.BooleanField(default=True)
+    is_marketplace_store = models.BooleanField(default=False)
 
     # Branding básico
     logo_url = models.URLField(blank=True)

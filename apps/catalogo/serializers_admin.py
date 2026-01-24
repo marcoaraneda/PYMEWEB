@@ -5,6 +5,7 @@ from .models import Product, ProductImage
 
 class ProductAdminSerializer(serializers.ModelSerializer):
     image_url = serializers.URLField(required=False, allow_null=True, allow_blank=True)
+    submitted_by_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Product
@@ -21,6 +22,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
             "is_featured",
             "product_of_week",
             "is_marketplace",
+            "submitted_by_name",
             "image_url",
         ]
         read_only_fields = ["store"]
@@ -36,6 +38,16 @@ class ProductAdminSerializer(serializers.ModelSerializer):
         product = super().update(instance, validated_data)
         self._maybe_attach_image(product, image_url)
         return product
+
+    def get_submitted_by_name(self, obj):
+        user = getattr(obj, "submitted_by", None)
+        if not user:
+            return None
+        if hasattr(user, "get_full_name"):
+            full = user.get_full_name()
+            if full:
+                return full
+        return getattr(user, "email", None) or getattr(user, "username", None)
 
     def _maybe_attach_image(self, product, image_url):
         if not image_url:
