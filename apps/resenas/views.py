@@ -11,10 +11,11 @@ class ReviewPublicListAPIView(generics.ListAPIView):
         store_slug = self.kwargs["store_slug"]
         product_slug = self.kwargs.get("product_slug")
 
-        qs = Review.objects.filter(store__slug=store_slug)
-
-        # Solo mostrar aprobadas (ajusta el valor si tu choices usa otro texto)
-        qs = qs.filter(status="APPROVED")
+        allowed_statuses = [Review.APPROVED, Review.PENDING]
+        qs = Review.objects.select_related("product", "store").filter(
+            store__slug=store_slug,
+            status__in=allowed_statuses,
+        )
 
         if product_slug:
             qs = qs.filter(product__slug=product_slug)

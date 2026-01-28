@@ -10,6 +10,8 @@ from apps.orders.models import Order
 from apps.catalogo.models import Product
 from apps.stores.models import Store
 from apps.usuarios.models import StoreMembership
+from apps.resenas.models import Review
+from apps.resenas.serializers import ReviewFeedSerializer
 from .models import Ticket
 from .serializers import TicketSerializer
 
@@ -118,4 +120,39 @@ class DashboardSummaryView(APIView):
             "tickets_updated_24h": tickets_updated_24h,
             "notifications": notifications,
         }
+        return Response(data)
+
+
+class RecentReviewsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        store_param = request.query_params.get("store")
+        limit_param = request.query_params.get("limit")
+        try:
+            limit = max(1, int(limit_param)) if limit_param else 8
+        except (TypeError, ValueError):
+            limit = 8
+
+        user = request.user
+        if user.is_staff:
+            stores_qs = Store.objects.all()
+        else:
+            membership_ids = StoreMembership.objects.filter(user=user, is_active=True).values_list("store_id", flat=True)
+            stores_qs = Store.objects.filter(id__in=membership_ids)
+
+        if store_param:
+            stores_qs = stores_qs.filter(slug=store_param)
+
+        if not stores_qs.exists():
+            return Response([])
+
+        reviews_qs = (
+            Review.objects.filter(store__in=stores_qs)
+            .exclude(status=Review.REJECTED)
+            .select_related("product", "store")
+            .order_by("-created_at")
+        )
+
+        data = ReviewFeedSerializer(reviews_qs[:limit], many=True).data
         return Response(data)

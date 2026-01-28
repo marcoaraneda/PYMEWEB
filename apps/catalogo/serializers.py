@@ -16,9 +16,20 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductVariantSerializer(serializers.ModelSerializer):
+    stock_available = serializers.SerializerMethodField()
+    stock_minimum = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductVariant
-        fields = ["id", "name", "sku", "is_active"]
+        fields = ["id", "name", "sku", "is_active", "stock_available", "stock_minimum"]
+
+    def get_stock_available(self, obj):
+        stock = getattr(obj, "stock", None)
+        return stock.stock_available if stock else 0
+
+    def get_stock_minimum(self, obj):
+        stock = getattr(obj, "stock", None)
+        return stock.stock_minimum if stock else 0
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -36,6 +47,7 @@ class ProductSerializer(serializers.ModelSerializer):
     store = StoreLiteSerializer(read_only=True)
     store_is_marketplace = serializers.SerializerMethodField()
     submitted_by_name = serializers.SerializerMethodField()
+    stock_available = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -55,6 +67,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "category",
             "variants",
             "images",
+            "stock_available",
         ]
 
     def get_store_is_marketplace(self, obj):
@@ -69,6 +82,13 @@ class ProductSerializer(serializers.ModelSerializer):
             if full:
                 return full
         return getattr(user, "email", None) or getattr(user, "username", None)
+
+    def get_stock_available(self, obj):
+        total = 0
+        for variant in obj.variants.all():
+            stock = getattr(variant, "stock", None)
+            total += stock.stock_available if stock else 0
+        return total
 
 
 class MarketplaceSubmissionSerializer(serializers.ModelSerializer):
