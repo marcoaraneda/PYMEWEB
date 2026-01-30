@@ -30,23 +30,3 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Producto no encontrado en esta tienda")
         review = Review.objects.create(product=product, store=product.store, **validated_data)
         return review
-
-
-class ReviewFeedSerializer(serializers.ModelSerializer):
-    product_name = serializers.CharField(source="product.name", read_only=True)
-    product_slug = serializers.CharField(source="product.slug", read_only=True)
-    store_slug = serializers.CharField(source="store.slug", read_only=True)
-
-    class Meta:
-        model = Review
-        fields = [
-            "id",
-            "rating",
-            "comment",
-            "customer_name",
-            "status",
-            "created_at",
-            "product_name",
-            "product_slug",
-            "store_slug",
-        ]

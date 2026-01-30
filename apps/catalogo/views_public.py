@@ -38,7 +38,7 @@ class ProductPublicListAPIView(generics.ListAPIView):
 
         return (
             qs.select_related("category", "store", "submitted_by")
-            .prefetch_related("variants", "variants__stock", "images")
+            .prefetch_related("variants", "images")
             .order_by("-id")
         )
 
@@ -53,7 +53,7 @@ class ProductPublicDetailAPIView(generics.RetrieveAPIView):
         return (
             Product.objects.filter(store__slug=store_slug, is_active=True)
             .select_related("category", "store")
-            .prefetch_related("variants", "variants__stock", "images")
+            .prefetch_related("variants", "images")
         )
 
 
@@ -66,7 +66,7 @@ class MarketplaceProductListAPIView(generics.ListAPIView):
         qs = (
             Product.objects.filter(is_active=True, is_marketplace=True)
             .select_related("category", "store", "submitted_by")
-            .prefetch_related("variants", "variants__stock", "images")
+            .prefetch_related("variants", "images")
             .order_by("-created_at")
         )
         if limit:
