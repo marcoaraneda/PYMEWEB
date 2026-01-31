@@ -54,6 +54,7 @@ urlpatterns = [
 
     path("api/store/<slug:store_slug>/resenas/", include("apps.resenas.urls")),
     path("api/store/<slug:store_slug>/admin/resenas/", include("apps.resenas.urls_admin")),
+    path("api/resenas/owner/", include("apps.resenas.urls_owner")),
 
     path("api/store/<slug:store_slug>/faq/", include("apps.faq.urls")),
     path("api/store/<slug:store_slug>/faq/", include("apps.faq.urls_product_questions")),
